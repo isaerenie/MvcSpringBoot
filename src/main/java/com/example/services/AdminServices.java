@@ -30,4 +30,10 @@ final HttpServletResponse res;
         }
     }
 
+    public String logout(){
+        req.getSession().removeAttribute("Admin");
+        req.changeSessionId();
+        return "redirect:/";
+    }
+
 }

@@ -1,31 +1,43 @@
 package com.example.config;
 
+import com.example.entities.Admin;
+import org.springframework.context.annotation.Configuration;
+
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Configuration
 public class FilterConfig implements Filter {
-    @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-        HttpServletRequest req = (HttpServletRequest) servletRequest;
-        HttpServletResponse res = (HttpServletResponse) servletResponse;
 
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+
+        HttpServletRequest req = (HttpServletRequest) request;
+        HttpServletResponse res = (HttpServletResponse) response;
 
         String url = req.getRequestURI();
         String[] urls = {"/", "/login"};
         boolean loginStatus = true;
-        for (String item : urls) {
-            if (url.equals(item)) {
+        for( String item : urls ) {
+            if (  url.equals(item) ) {
                 loginStatus = false;
             }
         }
-        if (loginStatus) {
+
+        if ( loginStatus ) {
             boolean status = req.getSession().getAttribute("admin") == null;
-            if (status) {
+            if ( status ) {
+                // oturum yok!
                 res.sendRedirect("http://localhost:8090/");
+            }else {
+                Admin admin = (Admin) req.getSession().getAttribute("admin");
+                req.setAttribute("admin", admin);
             }
         }
-        filterChain.doFilter(req, res);
+
+        chain.doFilter(req, res);
     }
+
 }
